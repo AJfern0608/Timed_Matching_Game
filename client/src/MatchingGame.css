@@ -1,0 +1,278 @@
+/* Main Game Container */
+.matching-game {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Inter', sans-serif;
+  color: #333;
+}
+
+/* Menu Screen */
+.menu-screen, .instructions-screen, .level-complete-screen, 
+.game-over-screen, .game-complete-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.menu-screen h1 {
+  font-size: 4rem;
+  margin-bottom: 2rem;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.menu-card, .instruction-card, .complete-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+}
+
+.menu-card h2, .instruction-card h2, .complete-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.high-score {
+  margin: 1.5rem 0;
+  padding: 0.8rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.high-score p {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #764ba2;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+/* Instructions */
+.instructions {
+  text-align: left;
+  margin: 1.5rem 0;
+}
+
+.instructions h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #667eea;
+}
+
+.instructions ul {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.instructions li {
+  margin-bottom: 0.5rem;
+}
+
+/* Game Screen */
+.game-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.game-header {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.game-info p {
+  margin: 0.5rem;
+  font-weight: bold;
+}
+
+/* Card Grid */
+.card-grid {
+  display: grid;
+  gap: 10px;
+  justify-content: center;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 900px;
+  flex-grow: 1;
+}
+
+.grid-8 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-12 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-16 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-20 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.grid-24 {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+/* Card Styling */
+.card {
+  aspect-ratio: 3/4;
+  perspective: 1000px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-back {
+  background-color: #4c1d95;
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.card-front {
+  background-color: white;
+  transform: rotateY(180deg);
+  font-size: 2.5rem;
+}
+
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+.card.matched .card-front {
+  background-color: #d1fae5;
+  animation: pulse 1s;
+}
+
+/* Score Info */
+.score-info {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.score-info p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.new-high-score {
+  color: #f59e0b;
+  font-weight: bold;
+  font-size: 1.3rem !important;
+  animation: pulse 1.5s infinite;
+}
+
+/* Buttons */
+button {
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover {
+  background-color: #5a67d8;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .grid-8, .grid-12, .grid-16 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .grid-20, .grid-24 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .game-info {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-8, .grid-12, .grid-16, .grid-20, .grid-24 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .menu-screen h1 {
+    font-size: 2.5rem;
+  }
+  
+  .card-front {
+    font-size: 2rem;
+  }
+}
