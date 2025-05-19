@@ -91,7 +91,10 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .game-header {
@@ -100,6 +103,8 @@
   padding: 0.8rem;
   margin-bottom: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 90vmin;
 }
 
 .game-info {
@@ -120,28 +125,34 @@
   justify-content: center;
   margin: 0 auto;
   width: 100%;
-  max-width: 900px;
+  max-width: 90vmin;
+  height: auto;
   flex-grow: 1;
 }
 
 .grid-8 {
   grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
 }
 
 .grid-12 {
   grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
 }
 
 .grid-16 {
   grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
 }
 
 .grid-20 {
   grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
 }
 
 .grid-24 {
   grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
 }
 
 /* Card Styling */
@@ -152,6 +163,8 @@
   transition: transform 0.2s;
   position: relative;
   transform-style: preserve-3d;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .card:hover {
@@ -249,23 +262,61 @@ button:active {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .grid-8, .grid-12, .grid-16 {
-    grid-template-columns: repeat(3, 1fr);
+  .grid-8 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
   }
   
-  .grid-20, .grid-24 {
+  .grid-12 {
     grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  }
+  
+  .grid-16 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+  }
+  
+  .grid-20 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+  }
+  
+  .grid-24 {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+  }
+  
+  .game-header {
+    width: 95%;
   }
   
   .game-info {
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 5px;
+    text-align: center;
+  }
+  
+  .card-grid {
+    max-width: 95vmin;
+    max-height: 70vh;
   }
 }
 
 @media (max-width: 480px) {
-  .grid-8, .grid-12, .grid-16, .grid-20, .grid-24 {
+  .grid-8 {
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+  }
+  
+  .grid-12 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+  }
+  
+  .grid-16, .grid-20, .grid-24 {
+    grid-template-columns: repeat(4, 1fr);
   }
   
   .menu-screen h1 {
@@ -273,6 +324,23 @@ button:active {
   }
   
   .card-front {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+  
+  .card-back {
+    font-size: 1.5rem;
+  }
+  
+  .game-info {
+    font-size: 0.9rem;
+  }
+  
+  .game-info p {
+    margin: 0.2rem;
+  }
+  
+  .card-grid {
+    max-height: 65vh;
+    gap: 6px;
   }
 }
