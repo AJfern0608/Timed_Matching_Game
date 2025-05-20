@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Memory Match Game</title>
-  <meta http-equiv="refresh" content="0;url=http://localhost:5000/" />
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -39,39 +38,73 @@
       margin-bottom: 1.5rem;
     }
     
-    .loading {
+    .button {
+      background-color: #8a5cf5;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
       display: inline-block;
-      width: 50px;
-      height: 50px;
-      border: 5px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
+      margin-top: 1rem;
     }
     
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .button:hover {
+      background-color: #7545e3;
+    }
+    
+    .instructions {
+      margin-top: 2rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: left;
+    }
+    
+    .instructions h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+    
+    .instructions ol {
+      margin-left: 1rem;
+      padding-left: 1rem;
+    }
+    
+    .instructions li {
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Memory Match Game</h1>
-    <p>Redirecting to the game... If you're not redirected automatically, please click the link below.</p>
-    <div class="loading"></div>
-    <p><a href="http://localhost:5000/" style="color: white; text-decoration: underline;">Go to the game</a></p>
-  </div>
-  
-  <script>
-    // Check if we're running on Replit
-    const isReplit = window.location.hostname.includes('replit');
+    <p>A fun card matching game with multiple difficulty levels!</p>
     
-    if (isReplit) {
-      // Update the redirect URL to use the Replit domain
-      const redirectUrl = window.location.origin;
-      document.querySelector('meta[http-equiv="refresh"]').content = `0;url=${redirectUrl}`;
-      document.querySelector('a').href = redirectUrl;
-    }
-  </script>
+    <div class="instructions">
+      <h2>How to Play</h2>
+      <ol>
+        <li>Click on a card to flip it over.</li>
+        <li>Try to find matching pairs of cards.</li>
+        <li>Complete all levels before running out of lives.</li>
+        <li>Advance through 5 progressively difficult levels.</li>
+        <li>Try to achieve the highest score possible!</li>
+      </ol>
+    </div>
+    
+    <div class="instructions">
+      <h2>How to Run on Replit</h2>
+      <ol>
+        <li>Copy the entire project to your Replit.</li>
+        <li>In the Replit shell, run <code>npm install</code> to install dependencies.</li>
+        <li>Run the game with <code>npm run dev</code>.</li>
+        <li>Click the "Run" button in Replit to start the server.</li>
+        <li>Your game will be accessible at the URL provided by Replit.</li>
+      </ol>
+    </div>
+    
+    <a href="./client/index.html" class="button">Open Game Documentation</a>
+  </div>
 </body>
 </html>
