@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Match Game</title>
+  <style>
+    /* Game Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      overflow: hidden;
+      color: #333;
+    }
+    
+    .game-container {
+      max-width: 1000px;
+      height: 100vh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    
+    /* Menu styles */
+    .menu-screen, .instructions-screen, .level-complete-screen, 
+    .game-over-screen, .game-complete-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .game-title {
+      font-size: 4rem;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      margin-bottom: 2rem;
+    }
+    
+    .menu-card, .instruction-card, .complete-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+    }
+    
+    .menu-card h2, .instruction-card h2, .complete-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #555;
+    }
+    
+    .high-score {
+      margin: 1.5rem 0;
+      padding: 0.8rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .high-score p {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #764ba2;
+    }
+    
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
+    }
+    
+    button {
+      background-color: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+    
+    button:hover {
+      background-color: #5a67d8;
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    /* Instructions */
+    .instructions {
+      text-align: left;
+      margin: 1.5rem 0;
+    }
+    
+    .instructions h3 {
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      color: #667eea;
+    }
+    
+    .instructions ul {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .instructions li {
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Game Screen */
+    .game-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      overflow: hidden;
+    }
+    
+    .game-header {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 90vmin;
+    }
+    
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    
+    .game-info p {
+      margin: 0.5rem;
+      font-weight: bold;
+    }
+    
+    /* Card Grid */
+    .card-grid {
+      display: grid;
+      gap: 10px;
+      justify-content: center;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 90vmin;
+      height: auto;
+      flex-grow: 1;
+    }
+    
+    .grid-8 {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    }
+    
+    .grid-12 {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+    }
+    
+    .grid-16 {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+    }
+    
+    .grid-20 {
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+    }
+    
+    .grid-24 {
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+    }
+    
+    /* Card Styling */
+    .card {
+      aspect-ratio: 3/4;
+      perspective: 1000px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      position: relative;
+      transform-style: preserve-3d;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    
+    .card:hover {
+      transform: scale(1.02);
+    }
+    
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-back {
+      background-color: #4c1d95;
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    
+    .card-front {
+      background-color: white;
+      transform: rotateY(180deg);
+      font-size: 2.5rem;
+    }
+    
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+    
+    .card.matched .card-front {
+      background-color: #d1fae5;
+      animation: pulse 1s;
+    }
+    
+    /* Score Info */
+    .score-info {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .score-info p {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    
+    .new-high-score {
+      color: #f59e0b;
+      font-weight: bold;
+      font-size: 1.3rem !important;
+      animation: pulse 1.5s infinite;
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .grid-8 {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+      }
+      
+      .grid-12 {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+      }
+      
+      .grid-16 {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+      }
+      
+      .grid-20 {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+      }
+      
+      .grid-24 {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(6, 1fr);
+      }
+      
+      .game-header {
+        width: 95%;
+      }
+      
+      .game-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 5px;
+        text-align: center;
+      }
+      
+      .card-grid {
+        max-width: 95vmin;
+        max-height: 70vh;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .grid-8 {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+      }
+      
+      .grid-12 {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+      }
+      
+      .grid-16, .grid-20, .grid-24 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .game-title {
+        font-size: 2.5rem;
+      }
+      
+      .card-front {
+        font-size: 1.8rem;
+      }
+      
+      .card-back {
+        font-size: 1.5rem;
+      }
+      
+      .game-info {
+        font-size: 0.9rem;
+      }
+      
+      .game-info p {
+        margin: 0.2rem;
+      }
+      
+      .card-grid {
+        max-height: 65vh;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container" class="game-container">
+    <!-- Game content will be inserted here by JavaScript -->
+  </div>
+
+  <script>
+    // Game State
+    const gameStates = {
+      MENU: 'menu',
+      INSTRUCTIONS: 'instructions',
+      PLAYING: 'playing',
+      LEVEL_COMPLETE: 'levelComplete',
+      GAME_OVER: 'gameOver',
+      GAME_COMPLETE: 'gameComplete'
+    };
+
+    // Level definitions
+    const levels = [
+      { cards: 8, timeLimit: 30, name: "Easy" },
+      { cards: 12, timeLimit: 45, name: "Medium" },
+      { cards: 16, timeLimit: 60, name: "Hard" },
+      { cards: 20, timeLimit: 75, name: "Expert" },
+      { cards: 24, timeLimit: 90, name: "Master" }
+    ];
+
+    // Game variables
+    let gameState = gameStates.MENU;
+    let currentLevel = 0;
+    let score = 0;
+    let lives = 3;
+    let timeRemaining = levels[0].timeLimit;
+    let cards = [];
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let moves = 0;
+    let timer = null;
+    let isProcessing = false;
+    let highScore = localStorage.getItem('matchingGameHighScore') || 0;
+    let levelTimeBonus = 0;
+    let levelScore = 0;
+
+    // Game container
+    const gameContainer = document.getElementById('game-container');
+
+    // Initialize the game
+    function initGame() {
+      loadHighScore();
+      renderGame();
+    }
+
+    // Load high score
+    function loadHighScore() {
+      const savedHighScore = localStorage.getItem('matchingGameHighScore');
+      if (savedHighScore) {
+        highScore = parseInt(savedHighScore);
+      }
+    }
+
+    // Change game state
+    function changeGameState(newState) {
+      gameState = newState;
+      renderGame();
+    }
+
+    // Start game
+    function startGame() {
+      gameState = gameStates.PLAYING;
+      currentLevel = 0;
+      score = 0;
+      lives = 3;
+      levelScore = 0;
+      levelTimeBonus = 0;
+      timeRemaining = levels[currentLevel].timeLimit;
+      cards = createDeck(currentLevel);
+      flippedCards = [];
+      matchedPairs = 0;
+      moves = 0;
+      
+      startTimer();
+      renderGame();
+    }
+
+    // Show instructions
+    function showInstructions() {
+      gameState = gameStates.INSTRUCTIONS;
+      renderGame();
+    }
+
+    // Return to menu
+    function returnToMenu() {
+      gameState = gameStates.MENU;
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      renderGame();
+    }
+
+    // Go to next level
+    function nextLevel() {
+      currentLevel++;
+      
+      if (currentLevel < levels.length) {
+        timeRemaining = levels[currentLevel].timeLimit;
+        cards = createDeck(currentLevel);
+        flippedCards = [];
+        matchedPairs = 0;
+        moves = 0;
+        levelScore = 0;
+        levelTimeBonus = 0;
+        
+        gameState = gameStates.PLAYING;
+        startTimer();
+      } else {
+        // Player completed all levels
+        gameState = gameStates.GAME_COMPLETE;
+        checkAndSaveHighScore();
+      }
+      
+      renderGame();
+    }
+
+    // Game over
+    function gameOver() {
+      gameState = gameStates.GAME_OVER;
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      checkAndSaveHighScore();
+      renderGame();
+    }
+
+    // Check and save high score
+    function checkAndSaveHighScore() {
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('matchingGameHighScore', score.toString());
+      }
+    }
+
+    // Start the timer
+    function startTimer() {
+      if (timer) {
+        clearInterval(timer);
+      }
+      
+      timer = setInterval(() => {
+        timeRemaining--;
+        
+        if (timeRemaining <= 0) {
+          clearInterval(timer);
+          lives--;
+          
+          if (lives <= 0) {
+            gameOver();
+          } else {
+            // Reset the level
+            timeRemaining = levels[currentLevel].timeLimit;
+            cards = createDeck(currentLevel);
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            startTimer();
+            renderGame();
+          }
+        } else {
+          // Update the timer display
+          updateTimerDisplay();
+        }
+      }, 1000);
+    }
+
+    // Update the timer display
+    function updateTimerDisplay() {
+      const timerElement = document.getElementById('time-display');
+      if (timerElement) {
+        timerElement.textContent = formatTime(timeRemaining);
+      }
+    }
+
+    // Format time
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    // Create a deck of cards for the current level
+    function createDeck(level) {
+      const symbols = ['🍎', '🍌', '🍓', '🍒', '🍑', '🍊', '🥝', '🍉', '🍇', '🍍', '🥭', '🍋', '🍏', '🍐', '🥥', '🥝', '🥑', '🍆', '🥔', '🥕'];
+      const numberOfPairs = levels[level].cards / 2;
+      const levelSymbols = symbols.slice(0, numberOfPairs);
+      
+      let newCards = [];
+      
+      // Create pairs of cards
+      levelSymbols.forEach((symbol, index) => {
+        newCards.push({
+          id: index * 2,
+          value: symbol,
+          isFlipped: false,
+          isMatched: false
+        });
+        
+        newCards.push({
+          id: index * 2 + 1,
+          value: symbol,
+          isFlipped: false,
+          isMatched: false
+        });
+      });
+      
+      // Shuffle cards
+      return newCards.sort(() => Math.random() - 0.5);
+    }
+
+    // Handle card click
+    function handleCardClick(id) {
+      // Don't allow clicks while processing a match or if card is already flipped/matched
+      const clickedCard = cards.find(card => card.id === id);
+      
+      if (isProcessing || flippedCards.length >= 2 || clickedCard.isFlipped || clickedCard.isMatched) {
+        return;
+      }
+      
+      // Flip the card
+      cards = cards.map(card => 
+        card.id === id ? { ...card, isFlipped: true } : card
+      );
+      
+      // Add card to flipped cards
+      flippedCards.push(id);
+      
+      // Check for matches if two cards are flipped
+      if (flippedCards.length === 2) {
+        checkForMatch();
+      }
+      
+      renderGame();
+    }
+
+    // Check for match
+    function checkForMatch() {
+      isProcessing = true;
+      moves++;
+      
+      const [firstId, secondId] = flippedCards;
+      const firstCard = cards.find(card => card.id === firstId);
+      const secondCard = cards.find(card => card.id === secondId);
+      
+      if (firstCard.value === secondCard.value) {
+        // Match found
+        cards = cards.map(card => 
+          card.id === firstId || card.id === secondId ? { ...card, isMatched: true } : card
+        );
+        
+        matchedPairs++;
+        levelScore += 100;
+        score += 100;
+        
+        // Clear flipped cards
+        setTimeout(() => {
+          flippedCards = [];
+          isProcessing = false;
+          
+          // Check if all pairs are matched
+          if (matchedPairs === levels[currentLevel].cards / 2) {
+            // Level complete
+            if (timer) {
+              clearInterval(timer);
+              timer = null;
+            }
+            
+            // Calculate time bonus
+            levelTimeBonus = Math.floor(timeRemaining * 10);
+            score += levelTimeBonus;
+            
+            gameState = gameStates.LEVEL_COMPLETE;
+          }
+          
+          renderGame();
+        }, 500);
+      } else {
+        // No match
+        setTimeout(() => {
+          cards = cards.map(card => 
+            card.id === firstId || card.id === secondId ? { ...card, isFlipped: false } : card
+          );
+          
+          flippedCards = [];
+          isProcessing = false;
+          renderGame();
+        }, 1000);
+      }
+    }
+
+    // Render the game
+    function renderGame() {
+      // Clear previous content
+      gameContainer.innerHTML = '';
+      
+      // Render based on current game state
+      switch (gameState) {
+        case gameStates.MENU:
+          renderMenuScreen();
+          break;
+        case gameStates.INSTRUCTIONS:
+          renderInstructionsScreen();
+          break;
+        case gameStates.PLAYING:
+          renderGameScreen();
+          break;
+        case gameStates.LEVEL_COMPLETE:
+          renderLevelCompleteScreen();
+          break;
+        case gameStates.GAME_OVER:
+          renderGameOverScreen();
+          break;
+        case gameStates.GAME_COMPLETE:
+          renderGameCompleteScreen();
+          break;
+      }
+    }
+
+    // Render menu screen
+    function renderMenuScreen() {
+      const menuHTML = `
+        <div class="menu-screen">
+          <h1 class="game-title">Memory Match</h1>
+          <div class="menu-card">
+            <h2>Test Your Memory!</h2>
+            <p>Match pairs of cards before time runs out.</p>
+            
+            ${highScore > 0 ? `
+              <div class="high-score">
+                <p>High Score: ${highScore}</p>
+              </div>
+            ` : ''}
+            
+            <div class="menu-buttons">
+              <button onclick="startGame()">Start Game</button>
+              <button onclick="showInstructions()">How to Play</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      gameContainer.innerHTML = menuHTML;
+    }
+
+    // Render instructions screen
+    function renderInstructionsScreen() {
+      const instructionsHTML = `
+        <div class="instructions-screen">
+          <div class="instruction-card">
+            <h2>How to Play</h2>
+            
+            <div class="instructions">
+              <h3>Goal</h3>
+              <p>Match all pairs of cards before the timer runs out.</p>
+              
+              <h3>Game Rules</h3>
+              <ul>
+                <li>Click a card to flip it over</li>
+                <li>Try to find its matching pair</li>
+                <li>If you match all cards, you advance to the next level</li>
+                <li>If you run out of time, you lose a life</li>
+                <li>The game ends when you complete all levels or lose all lives</li>
+              </ul>
+              
+              <h3>Scoring</h3>
+              <ul>
+                <li>100 points for each matched pair</li>
+                <li>Time bonus at the end of each level</li>
+                <li>Try to achieve the highest score!</li>
+              </ul>
+            </div>
+            
+            <button onclick="returnToMenu()">Back to Menu</button>
+          </div>
+        </div>
+      `;
+      
+      gameContainer.innerHTML = instructionsHTML;
+    }
+
+    // Render game screen
+    function renderGameScreen() {
+      let gameHTML = `
+        <div class="game-screen">
+          <div class="game-header">
+            <div class="game-info">
+              <p>Level: ${currentLevel + 1} (${levels[currentLevel].name})</p>
+              <p>Score: ${score}</p>
+              <p>Time: <span id="time-display">${formatTime(timeRemaining)}</span></p>
+              <p>Lives: ${Array(lives).fill('❤️').join('')}</p>
+            </div>
+          </div>
+          
+          <div class="card-grid grid-${levels[currentLevel].cards}">
+      `;
+      
+      // Add cards
+      cards.forEach(card => {
+        gameHTML += `
+          <div 
+            class="card ${card.isFlipped ? 'flipped' : ''} ${card.isMatched ? 'matched' : ''}"
+            onclick="handleCardClick(${card.id})"
+          >
+            <div class="card-back">?</div>
+            <div class="card-front">${card.value}</div>
+          </div>
+        `;
+      });
+      
+      gameHTML += `
+          </div>
+        </div>
+      `;
+      
+      gameContainer.innerHTML = gameHTML;
+    }
+
+    // Render level complete screen
+    function renderLevelCompleteScreen() {
+      const levelCompleteHTML = `
+        <div class="level-complete-screen">
+          <div class="complete-card">
+            <h2>Level ${currentLevel + 1} Complete!</h2>
+            <p>Great job! You've matched all the cards.</p>
+            
+            <div class="score-info">
+              <p>Level Score: ${levelScore}</p>
+              <p>Time Bonus: +${levelTimeBonus}</p>
+              <p>Total Score: ${score}</p>
+            </div>
+            
+            <button onclick="nextLevel()">Continue to Level ${currentLevel + 2}</button>
+          </div>
+        </div>
+      `;
+      
+      gameContainer.innerHTML = levelCompleteHTML;
+    }
+
+    // Render game over screen
+    function renderGameOverScreen() {
+      const gameOverHTML = `
+        <div class="game-over-screen">
+          <div class="complete-card">
+            <h2>Game Over</h2>
+            <p>You've run out of lives!</p>
+            
+            <div class="score-info">
+              <p>Final Score: ${score}</p>
+              <p>Level Reached: ${currentLevel + 1}</p>
+              ${score > highScore ? '<p class="new-high-score">New High Score!</p>' : ''}
+            </div>
+            
+            <div class="menu-buttons">
+              <button onclick="startGame()">Play Again</button>
+              <button onclick="returnToMenu()">Return to Menu</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      gameContainer.innerHTML = gameOverHTML;
+    }
+
+    // Render game complete screen
+    function renderGameCompleteScreen() {
+      const gameCompleteHTML = `
+        <div class="game-complete-screen">
+          <div class="complete-card">
+            <h2>Game Complete!</h2>
+            <p>Congratulations! You've completed all levels!</p>
+            
+            <div class="score-info">
+              <p>Final Score: ${score}</p>
+              ${score > highScore ? '<p class="new-high-score">New High Score!</p>' : ''}
+            </div>
+            
+            <div class="menu-buttons">
+              <button onclick="startGame()">Play Again</button>
+              <button onclick="returnToMenu()">Return to Menu</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      gameContainer.innerHTML = gameCompleteHTML;
+    }
+
+    // Initialize the game
+    initGame();
+  </script>
+</body>
+</html>
